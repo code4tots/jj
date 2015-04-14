@@ -1,0 +1,1 @@
+clear && antlr4 -Dlanguage=Python3 Jj.g4 && javac JjRuntime.java && echo 'print("hello world!", 3, print);' | python3 jj.py simp | java JjRuntime

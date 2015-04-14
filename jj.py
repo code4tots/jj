@@ -67,7 +67,7 @@ class BaseListener(JjListener):
 
   def enterDict(self, ctx):
     self.PushStack()
-  def exitList(self, ctx):
+  def exitDict(self, ctx):
     self.Push(self.Call(self.Name(DICT), self.PopStack()))
 
   def exitAttr(self, ctx):
@@ -75,6 +75,14 @@ class BaseListener(JjListener):
 
   def exitGetItem(self, ctx):
     self.Push(self.Call(self.Name(GET), self.MultiPop(2)))
+
+  def enterCall(self, ctx):
+    self.PushStack()
+  def exitCall(self, ctx):
+    # f, *args = self.PopStack() # doesn't work in Python2
+    fargs = self.PopStack()
+    f, args = fargs[0], fargs[1:]
+    self.Push(self.Call(f, args))
 
   def exitDecl(self, ctx):
     self.Push(self.Decl(ctx.NAME().getText(), self.Pop()))
@@ -99,7 +107,7 @@ class ToTreeListener(BaseListener):
     return {'type': 'block', 'stmts': stmts}
 
   def Scope(self, body):
-    return {'type': 'block', 'body': body}
+    return {'type': 'scope', 'body': body}
 
   def If(self, cond, a, b):
     return {'type': 'if', 'cond': cond, 'a': a, 'b': b}
@@ -130,6 +138,21 @@ class ToJsonListener(ToTreeListener):
   def Result(self, x):
     return json.dumps(x)
 
+def ToSimp(x):
+  """Convert to a format easy to parse in java."""
+  if isinstance(x, str):
+    return 'str %d %s' % (len(x), ' '.join(str(ord(c)) for c in x))
+  elif isinstance(x, list):
+    return '[ %s ]' % ' '.join(ToSimp(i) for i in x)
+  elif isinstance(x, dict):
+    return '{ %s }' % ' '.join('%s %s' % tuple(map(ToSimp, p)) for p in x.items())
+  raise ValueError(type(x))
+
+class ToSimpListener(ToTreeListener):
+
+  def Result(self, x):
+    return ToSimp(x)
+
 def Parse(string, listener=None):
   listener = listener or ToTreeListener()
   tree = JjParser(CommonTokenStream(JjLexer(InputStream(string)))).start()
@@ -138,6 +161,7 @@ def Parse(string, listener=None):
 
 def Main(string, command):
   listener = (ToJsonListener if command == 'json' else
+              ToSimpListener if command == 'simp' else
               ToTreeListener)()
   return Parse(string, listener)
 

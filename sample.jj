@@ -1,0 +1,9 @@
+app := {
+	"onStart": \ {
+		print("Inside onStart");
+	}
+};
+
+print(app);
+
+# app.onStart();
