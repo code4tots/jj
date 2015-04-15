@@ -1,1 +1,7 @@
-clear && antlr4 -Dlanguage=Python3 Jj.g4 && javac JjRuntime.java && echo 'print("hello world!", 3, print);' | python3 jj.py simp | java JjRuntime
+Dependencies
+
+	antlr4 (have the file antlr-4.x-complete.jar available)
+	antlr4-python3-runtime (install from pip)
+	android sdk
+		platform-tools
+		android-22 target
