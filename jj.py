@@ -166,4 +166,4 @@ def Main(string, command):
   return Parse(string, listener)
 
 if __name__ == '__main__':
-  print(Main(sys.stdin.read(), sys.argv[1] if len(sys.argv) > 0 else None))
+  print(Main(sys.stdin.read(), sys.argv[1] if len(sys.argv) > 1 else None))
