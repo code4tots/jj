@@ -1,9 +1,18 @@
-app := {
-	"onStart": \ {
-		print("Inside onStart");
-	}
-};
+a := import('android');
+m := import('media');
 
-print(app);
-
-# app.onStart();
+a.onCreate(\ {
+	a.setView(a.vertical(
+		top := a.text(''),
+		a.button('play', \ {
+			top.setText('button clicked!');
+			if m.play('http://www.podtrac.com/pts/redirect.mp3/podcast.thisamericanlife.org/podcast/554.mp3') {
+				middle.setText('success!');
+			}
+			else {
+				middle.setText('failure...');
+			}
+		}),
+		middle := a.text('')),
+		bottom := a.text(''));
+});

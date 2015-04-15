@@ -149,6 +149,10 @@ public class JjRuntime {
 			for (int i = 0; i < args.length; i += 2)
 				put(args[i], args[i+1]);
 		}
+
+		public Object putBuiltin(Builtin builtin) {
+			return put(builtin.getName(), builtin);
+		}
 	}
 
 	abstract public static class Function {

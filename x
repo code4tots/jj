@@ -40,7 +40,8 @@ create_android_project() {
 create_project() {
 	([ -d "$1" ] || create_android_project "$1") && \
 	cp $PATH_TO_JJ/JjRuntime.java "$1"/src/com/mtots/jj/ && \
-	cp $PATH_TO_JJ/MainActivity.java "$1"/src/com/mtots/jj/
+	cp $PATH_TO_JJ/MainActivity.java "$1"/src/com/mtots/jj/ && \
+	cp $PATH_TO_JJ/AndroidManifest.xml "$1"/
 }
 
 jj_run() {
@@ -52,6 +53,7 @@ jj_run() {
 	local name=$(capitalize $base) && \
 	(cd $PATH_TO_JJ && ([ -f JjParser.py ] || jj_build)) && \
 	create_project $name && \
-	cat Script.java | sed s/%s/"$(cat "$1" | (cd $PATH_TO_JJ && python3 jj.py simp))"/ > "$name"/src/com/mtots/jj/Script.java && \
+	cat $PATH_TO_JJ/Script.java | sed s/%s/"$(cat "$1" | (cd $PATH_TO_JJ && python3 jj.py simp))"/ > \
+		"$name"/src/com/mtots/jj/Script.java && \
 	(cd $name && ant debug && ant -d installd)
 }
